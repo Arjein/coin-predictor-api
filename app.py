@@ -43,6 +43,6 @@ def get_predictions():
 if __name__ == '__main__':
 
     port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=port)
     #main_app.socketio.run(main_app.app, debug=True, host='0.0.0.0', port=5001)
     

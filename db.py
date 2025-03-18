@@ -16,7 +16,7 @@ from model import BNBPredictor
 
 load_dotenv()
 MODEL_PATH = 'models/baseline_model'
-device = 'mps'
+device = 'cpu'
 predictor = BNBPredictor(path_to_model=MODEL_PATH, device=device)
 
 class DatabaseManager():
