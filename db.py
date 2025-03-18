@@ -12,16 +12,10 @@ from models import Kline, Prediction  # Import your models
 import sys 
 import os
 from dotenv import load_dotenv
-load_dotenv()
-# Append the parent directory of the current file to sys.path
-
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-if parent_dir not in sys.path:
-    sys.path.append(parent_dir)
 from model import BNBPredictor
 
-
-MODEL_PATH = '/Users/arjein/Documents/GitHub/AI/coin_pred/models/baseline_model'
+load_dotenv()
+MODEL_PATH = 'models/baseline_model'
 device = 'mps'
 predictor = BNBPredictor(path_to_model=MODEL_PATH, device=device)
 

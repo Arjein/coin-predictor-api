@@ -5,7 +5,7 @@ import pandas as pd
 import json
 from flask_sqlalchemy import SQLAlchemy
 from models import db
-
+import os
 app = Flask(__name__)
 main_app = DatabaseManager(app, db)
 CORS(main_app.app)
@@ -41,6 +41,8 @@ def get_predictions():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host='0.0.0.0', port=5000)
     #main_app.socketio.run(main_app.app, debug=True, host='0.0.0.0', port=5001)
     
