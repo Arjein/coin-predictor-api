@@ -26,9 +26,11 @@ debugpy==1.8.12
 decorator==5.2.1
 Deprecated==1.2.18
 dill==0.3.8
+dnspython==2.7.0
 docker-pycreds==0.4.0
 en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl#sha256=1932429db727d4bff3deed6b34cfc05df17794f4a52eeb26cf8928f7c1a0fb85
 evaluate==0.4.3
+eventlet==0.39.1
 executing==2.2.0
 feedparser==6.0.11
 filelock==3.17.0
@@ -50,8 +52,10 @@ google-crc32c==1.6.0
 google-resumable-media==2.7.2
 googleapis-common-protos==1.69.1
 granite-tsfm==0.2.22
+greenlet==3.1.1
 grpcio==1.71.0rc2
 grpcio-status==1.71.0rc2
+gunicorn==23.0.0
 h11==0.14.0
 huggingface-hub==0.29.1
 idna==3.10
