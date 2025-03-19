@@ -8,7 +8,7 @@ def register_routes(app):
 
     @app.route('/candles')
     def get_candles():
-        klines = Kline.query.order_by(Kline.open_time.desc()).limit(1000).all()
+        klines = Kline.query.order_by(Kline.open_time.desc()).limit(100).all()
         klines.reverse()
         return jsonify([{
             "time": k.open_time,
@@ -21,7 +21,9 @@ def register_routes(app):
 
     @app.route('/forecasts')
     def get_forecasts():
-        preds = Prediction.query.all()
+        preds = Prediction.query.order_by(Prediction.open_time.desc()).limit(100).all()
+        preds = list(reversed(preds))
+
         return jsonify([{
             "time": p.open_time,
             "open": p.open,
