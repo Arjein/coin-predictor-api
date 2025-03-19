@@ -13,7 +13,7 @@ def create_app():
     app.config.from_object(Config)
 
     db.init_app(app)
-    socketio.init_app(app)
+    socketio.init_app(app, async_mode='eventlet')
     cors.init_app(app)
 
     with app.app_context():
