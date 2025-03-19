@@ -24,7 +24,11 @@ def create_app():
     return app
 
 app = create_app()
-db_manager = DatabaseManager(app, db, socketio)
+
+@app.before_first_request
+def initialize_database_manager():
+    print("✅ Starting Database Manager background tasks...", flush=True)
+    DatabaseManager(app, db, socketio)
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', Config.PORT))

@@ -21,15 +21,20 @@ class BinanceManager():
     def binance_kline_stream(self):
         url = "wss://stream.binance.com:9443/ws/bnbusdt@kline_5m"
         ws = websocket.WebSocket()
-        ws.connect(url)
-        print("Connected to Binance WebSocket.")
+
+        try:
+            ws.connect(url)
+            print("✅ Successfully connected to Binance WebSocket", flush=True)
+        except Exception as e:
+            print("❌ WebSocket connection failed:", e, flush=True)
+            return  # terminate if connection fails
 
         try:
             while True:
                 message = ws.recv()
                 data = json.loads(message)
                 kline = data.get('k', {})
-                print('Kline Recevied from Binance API:', kline)
+                print(f'Kline Recevied from Binance API: {kline}', flush=True)
                 kline_update = {
                     'symbol': kline.get('s'),
                     'open_time': kline.get('t'),
