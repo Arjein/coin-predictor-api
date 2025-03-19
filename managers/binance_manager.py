@@ -1,6 +1,5 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
-import threading
 from sqlalchemy.dialects.postgresql import insert
 import requests
 import pandas as pd
@@ -8,62 +7,62 @@ import time
 import asyncio
 import websockets
 import json
-from preprocess import check_time_series, impute_missing_values_t_s
+from utils.preprocessing import check_time_series, impute_missing_values_t_s
+import websocket
 
-class BinanceAPIManager():
+class BinanceManager():
+    def __init__(self, db_manager):
+        self.db_manager = db_manager
+        self.app = db_manager.app
+        self.db = db_manager.db
+        self.socketio = db_manager.socketio
+
     
-    async def binance_kline_stream(self):
+    def binance_kline_stream(self):
         url = "wss://stream.binance.com:9443/ws/bnbusdt@kline_5m"
-        async with websockets.connect(url) as ws:
-            print("Connected to Binance WebSocket.")
+        ws = websocket.WebSocket()
+        ws.connect(url)
+        print("Connected to Binance WebSocket.")
+
+        try:
             while True:
-                message = await ws.recv()
+                message = ws.recv()
                 data = json.loads(message)
                 kline = data.get('k', {})
-                # Forward this kline to frontend
-                #print(f'Kline: {kline}')
-                # Here, you could insert the closed kline into your database.
+
                 kline_update = {
                     'symbol': kline.get('s'),
-                    #'datetime': (str)(pd.to_datetime(kline.get('t'), unit='ms', utc=True)),
                     'open_time': kline.get('t'),
-                    'close_time':kline.get('T'),
+                    'close_time': kline.get('T'),
                     'volume': kline.get('v'),
-                    'quote_asset_volume':kline.get('q'),
-                    'number_of_trades':kline.get('n'),
-                    'taker_buy_base_volume':kline.get('V'),
-                    'taker_buy_quote_volume':kline.get('Q'),
-                    'open':kline.get('o'),
-                    'high':kline.get('h'),
-                    'low':kline.get('l'),
-                    'close':kline.get('c'),
+                    'quote_asset_volume': kline.get('q'),
+                    'number_of_trades': kline.get('n'),
+                    'taker_buy_base_volume': kline.get('V'),
+                    'taker_buy_quote_volume': kline.get('Q'),
+                    'open': kline.get('o'),
+                    'high': kline.get('h'),
+                    'low': kline.get('l'),
+                    'close': kline.get('c'),
                     'is_closed': kline.get('x', False)
                 }
-                # Yield the closed kline and continue streaming
+
                 yield kline_update
 
-    # Add The latest kline
-    def start_stream(self, db, socketio):
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        async def stream():
-            try:
-                async for kline_update in self.binance_kline_stream():
-                    #print("Received a kline:", kline_update)
-                    socketio.emit('kline_update', kline_update)
-                    if kline_update.get('is_closed'):
-                        # Add to Database
-                        kline_update.pop("is_closed")
-                        
-                        #kline_update.update({'datetime' : pd.to_datetime(kline_update.get('datetime'))})
-                        
+        except websocket.WebSocketException as e:
+            print("WebSocket Exception:", e)
+        finally:
+            ws.close()
+    
+    def stream_klines(self):
+        for kline_update in self.binance_kline_stream():
+            self.socketio.emit('kline_update', kline_update)
 
-                        db.insert_single_kline(kline_update)
+            if kline_update.get('is_closed'):
+                kline_update.pop("is_closed")
+                self.db_manager.insert_single_kline(kline_update)
+                print('✅ Kline inserted into Database')
 
-                        print('Kline Instered to Database')
-            except Exception as e:
-                print("Error in Binance stream:", e)
-        loop.run_until_complete(stream())
+            self.socketio.sleep(0)  # Cooperative sleep
 
 
 
