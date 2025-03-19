@@ -29,7 +29,7 @@ class BinanceManager():
                 message = ws.recv()
                 data = json.loads(message)
                 kline = data.get('k', {})
-
+                print('Kline Recevied from Binance API:', kline)
                 kline_update = {
                     'symbol': kline.get('s'),
                     'open_time': kline.get('t'),
