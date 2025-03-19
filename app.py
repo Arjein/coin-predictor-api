@@ -1,6 +1,7 @@
 import eventlet
 eventlet.monkey_patch()
 
+import os
 from flask import Flask
 from config import Config
 from extensions import db, socketio, cors
@@ -26,4 +27,5 @@ app = create_app()
 db_manager = DatabaseManager(app, db, socketio)
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=Config.PORT)
+    port = int(os.getenv('PORT', Config.PORT))
+    socketio.run(app, host='0.0.0.0', port=port)
