@@ -27,15 +27,30 @@ class DatabaseManager:
                 self.final_datetime = pd.to_datetime('2025-03-01', utc=True)
 
         print(f'✅ Last Kline timestamp: {self.final_datetime}')
-        # Keep your logic here exactly as you described:
-        self.socketio.start_background_task(self.startup_tasks)
+        
+        self.socketio.start_background_task(self._initial_load)
+        self.socketio.start_background_task(self.binance_manager.stream_klines)
+        self.socketio.start_background_task(self._prediction_loop)
 
 
-    def startup_tasks(self):
+
+    def _prediction_loop(self):
+        """Run predictions every 5 minutes."""
+        while True:
+            try:
+                self.prediction_manager.run_predictions()
+                print("✅ Predictions updated")
+            except Exception as e:
+                print("❌ Prediction error:", e)
+            self.socketio.sleep(300)  # wait 5 minutes
+
+
+    def _initial_load(self):
+        """One‑time historical data + fear index at startup."""
         self.update_klines()
         self.update_fear_greed_index()
-        self.make_predictions()
-        self.socketio.start_background_task(self.binance_manager.stream_klines)
+        print("✅ Initial load complete")
+    
 
 
     def update_klines(self):
