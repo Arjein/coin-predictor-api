@@ -13,7 +13,15 @@ def create_app():
     app.config.from_object(Config)
 
     db.init_app(app)
-    socketio.init_app(app, async_mode='eventlet', cors_allowed_origins="*")
+    socketio.init_app(
+        app,
+        async_mode='eventlet',
+        cors_allowed_origins="*",
+        ping_interval=10,
+        ping_timeout=60,
+        logger=True,
+        engineio_logger=True
+    )
     cors.init_app(app)
 
     with app.app_context():
