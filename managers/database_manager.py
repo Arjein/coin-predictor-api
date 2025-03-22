@@ -27,12 +27,16 @@ class DatabaseManager:
                 self.final_datetime = pd.to_datetime('2025-03-01', utc=True)
 
         print(f'✅ Last Kline timestamp: {self.final_datetime}')
-
         # Keep your logic here exactly as you described:
+        self.socketio.start_background_task(self.startup_tasks)
+
+
+    def startup_tasks(self):
         self.update_klines()
         self.update_fear_greed_index()
-        self.socketio.start_background_task(self.binance_manager.stream_klines)
         self.make_predictions()
+        self.socketio.start_background_task(self.binance_manager.stream_klines)
+
 
     def update_klines(self):
         current = pd.to_datetime(datetime.now(), utc=True).floor('5min')

@@ -6,9 +6,13 @@ def register_routes(app):
     def index():
         return "Flask-SocketIO running with eventlet!"
 
+    @app.route('/health')
+    def health():
+        return jsonify(status="ok"), 200
+
     @app.route('/candles')
     def get_candles():
-        klines = Kline.query.order_by(Kline.open_time.desc()).limit(100).all()
+        klines = Kline.query.order_by(Kline.open_time.desc()).limit(1000).all()
         klines.reverse()
         return jsonify([{
             "time": k.open_time,
