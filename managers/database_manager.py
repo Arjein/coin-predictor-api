@@ -29,10 +29,9 @@ class DatabaseManager:
         print(f'✅ Last Kline timestamp: {self.final_datetime}')
         
         self.socketio.start_background_task(self._initial_load)
-        self.socketio.start_background_task(self.binance_manager.stream_klines)
         self.socketio.start_background_task(self._prediction_loop)
-
-
+        self.socketio.start_background_task(self.binance_manager.stream_klines)
+        
 
     def _prediction_loop(self):
         """Run predictions every 5 minutes."""
