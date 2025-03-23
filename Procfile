@@ -1,1 +1,1 @@
-web: gunicorn app:app -k eventlet -w 3 --timeout 0
+web: gunicorn app:app -k eventlet -w 3 --timeout 0 -b 0.0.0.0:$PORT
