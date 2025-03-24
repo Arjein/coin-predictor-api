@@ -22,6 +22,7 @@ class PredictionManager:
         df['open_time'] = pd.to_datetime(df['open_time'], unit='ms', utc=True)
         df['open_time'] = df['open_time'].apply(lambda x: x.isoformat())
         df['symbol'] = df['symbol'].astype('category')
+        print('Request Will sent to HF')
         response = requests.post(
             HUGGINGFACE_API_URL,
             json={"data": df.to_dict(orient='records')}

@@ -35,12 +35,15 @@ class DatabaseManager:
 
     def _prediction_loop(self):
         """Run predictions every 5 minutes."""
+        print('Prediction Loop Started')
         while True:
             try:
+                print('Making Predictions')
                 self.prediction_manager.run_predictions()
                 print("✅ Predictions updated")
             except Exception as e:
                 print("❌ Prediction error:", e)
+            print('Prediction Sleeping')
             self.socketio.sleep(300)  # wait 5 minutes
 
 
